@@ -45,8 +45,10 @@ df$month<-month                                      ###a?ado columna mes
 df<-df[, c(4,5, 1, 2, 3)]                         ###reordeno
 df<-df %>% separate(hour, c("hour", "minute"))    ###separo hora/minuto
 
+df<-df %>% separate(hour, c("hour", "minute"))    ###separo hora/minuto
 
-
+aaaaa
+d
 
 
 df<-df[, c(4,5, 1, 2, 3)]                         ###reordeno
