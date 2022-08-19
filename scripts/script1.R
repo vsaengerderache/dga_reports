@@ -1,8 +1,3 @@
-#################################################################
-##Written by Vicente Saenger Derache, Civil Engineering Student##                                                        ##
-##        University of Concepcion, Concepcion, Chile          ##
-#################################################################
-
 #### library                                                     ####
 library(readr)
 library(dplyr)
@@ -48,7 +43,7 @@ for (i in 2:length(vp))
   month_data<-month_data[,-c(3,7,11)]        #delete height col
   #### column names                                              ####
   colnames(month_data) <-rep(c("day","hour","flow"),3)
-  #### sort data                                                 ####                                            
+  #### sort data using col names                                 ####                                            
   month_data<-rbind(month_data[1:3],
             setNames(month_data[4:6], names(month_data)[1:3]),
             setNames(month_data[7:9], names(month_data)[1:3]))     
@@ -68,9 +63,9 @@ for (i in 2:length(vp))
   month_data$date<-with(month_data, 
                         ymd_hm(paste(year, month, day, hour, minute, sep= ' ')))
   month_data<-month_data[order(month_data$date),]
-  #### sort data ####
+  #### sort data                                                 ####
   month_data<-month_data[,c(7,5,6,1,2,3,4)]    #sort 
-  #### merge months of data ####
+  #### merge months of data                                      ####
   df_processed<-merge(df_processed,month_data,all = TRUE)
 }
 
