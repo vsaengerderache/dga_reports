@@ -1,6 +1,6 @@
 El objetivo de este proyecto es generar códigos que permitan ordenar los datos proporcionados por la Dirección General de Aguas de Chile (DGA).
 
-Los codigos estan en el lenguaje R. 
+Los códigos estan en el lenguaje R. 
 
 Los datos se obtienen desde la DGA a través de dos fuentes distintas: 
 - Información Oficial Hidrometeorológica y de Calidad de Aguas en Línea (enlace: https://snia.mop.gob.cl/BNAConsultas/reportes)
