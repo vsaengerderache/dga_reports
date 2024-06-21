@@ -10,6 +10,6 @@ Los datos se obtienen desde la DGA a través de dos fuentes distintas:
 
 Los errores / comentarios / preguntas / colaboración de cualquier tipo son muy bienvenidos.
 
-## Material creado para los siguientes reportes: 
+## Material creado para los siguientes reportes DGA: 
 * **Caudal Instantáneo**: dga_q_instant
 * **Caudales Medios Diarios**: dga_q_daily
