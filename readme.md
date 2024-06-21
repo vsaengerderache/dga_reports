@@ -10,6 +10,12 @@ Los datos se obtienen desde la DGA a través de dos fuentes distintas:
 
 Los errores / comentarios / preguntas / colaboración de cualquier tipo son muy bienvenidos.
 
+## Información sobre el material: 
+
+Para cada reporte hay dos archivos .R, main (código principal), y supplementary (material sumplementario).
+
+Cada código main tiene un unico input (entrada): una ruta a una carpeta con reportes DGA, por ejemplo: "C:\\010_r\\dga_q_instant_reports_example".
+
 ## Material creado para los siguientes reportes DGA: 
 * **Caudal Instantáneo**: dga_q_instant
 * **Caudales Medios Diarios**: dga_q_daily
