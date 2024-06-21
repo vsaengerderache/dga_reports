@@ -144,7 +144,7 @@ sort_data <- function(df)
   return(df_processed)
 }
 
-q2m <- map(datos_por_archivo, ~ map(., sort_data)) %>%
+q_daily <- map(datos_por_archivo, ~ map(., sort_data)) %>%
   #map(~ map(., na.omit)) %>%
   map(., ~ reduce(.x, merge, by = "date", all = TRUE)) %>%
   bind_rows(.) %>%
