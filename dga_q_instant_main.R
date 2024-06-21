@@ -4,9 +4,9 @@ library(tidyverse)
 library(readxl)
 
 # 1) ruta a carpeta con reportes dga ----
+
 # cambiar segun caso
 
-setwd("G:\\My Drive\\010_programacion\\010_r\\dga_q_instant\\input")
 folder_files <- "dga_q_instant_reports_example" # path a carpeta con archivos xls
 
 # 2) leer archivos ----

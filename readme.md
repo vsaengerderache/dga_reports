@@ -10,5 +10,6 @@ Los datos se obtienen desde la DGA a través de dos fuentes distintas:
 
 Los errores / comentarios / preguntas / colaboración de cualquier tipo son muy bienvenidos.
 
-## Códigos creados: 
-* **dga_q2m**: ordenar reportes de caudales medios diarios
+## Material creado para los siguientes reportes: 
+* **Caudal Instantáneo**: dga_q_instant
+* **Caudales Medios Diarios**: dga_q_daily
