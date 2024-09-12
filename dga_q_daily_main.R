@@ -1,28 +1,20 @@
-# library ----
-
+# library -
 library(tidyverse)
 library(readxl)
 
-# 1) ruta a carpeta con reportes dga ----
-# cambiar segun caso
+# folder path 
+folder_files <- "dga_q_daily_reports_example" # path to folder with xls files (dga reports)
+folder_files <- "C:\\010_r\\project_sociohydro_abm_flood_risk_r_discharge\\q_daily_dga_aux" # path to folder with xls files (dga reports)
 
-folder_files <- "dga_q_daily_reports_example" # path a carpeta con archivos xls
-
-# 2) leer archivos ----
-
-archivos_xls <- list.files(folder_files, full.names = TRUE, pattern = "\\.xls$") # lista de archivos xls
-datos_por_archivo <- lapply(archivos_xls, function(archivo) {
-  # Obtener la lista de hojas del archivo Excel
-  hojas <- excel_sheets(archivo)
-  # Leer cada hoja y almacenarla en una lista con nombre de hoja
-  datos_por_hoja <- setNames(lapply(hojas, function(hoja) {
-    read_xls(archivo, sheet = hoja, col_names = FALSE)
-  }), hojas)  # asignar el nombre de la hoja como nombre de la lista
-  # Devolver la lista de datos por hoja para este archivo
-  return(datos_por_hoja)
-}) # leer cada archivo xls
-
-# 3) ordenar datos ----
+# read files 
+list_xls_file <- list.files(folder_files, full.names = TRUE, pattern = "\\.xls$") # list xls file
+data_per_xls_file <- lapply(list_xls_file, function(xls_file) {
+  sheets <- excel_sheets(xls_file)
+  data_per_sheet <- setNames(lapply(sheets, function(sheet) {
+    read_xls(xls_file, sheet = sheet, col_names = FALSE)
+  }), sheets)  
+  return(data_per_sheet)
+}) # read each xls file
 
 # function sequence sort year data 
 sequence_sort <- function()
@@ -54,7 +46,6 @@ sequence_sort <- function()
   }
   return(sequence)
 }
-
 # function sort data    
 sort_data <- function(df) 
 {
@@ -144,6 +135,7 @@ sort_data <- function(df)
   return(df_processed)
 }
 
+# tidy data
 q_daily <- map(datos_por_archivo, ~ map(., sort_data)) %>%
   #map(~ map(., na.omit)) %>%
   map(., ~ reduce(.x, merge, by = "date", all = TRUE)) %>%
