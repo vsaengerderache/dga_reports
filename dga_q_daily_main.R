@@ -1,4 +1,4 @@
-# library -
+# library 
 library(tidyverse)
 library(readxl)
 
@@ -49,43 +49,56 @@ sequence_sort <- function()
 # function sort data    
 sort_data <- function(df) 
 {
-  #df <- datos_por_archivo[[1]][[1]]
+  #df <- data_per_xls_file[[1]][[1]]
   
-  df_name <- as.character(df[6,3])  
-  df_caudal <- df[11:nrow(df),]
+  df_discharge <- df[11:nrow(df),]
   
-  # ordenar datos de caudal                                   ####
-  del_row   <- seq(3,22,2)
-  del_row   <- c(del_row,23,24,26)
-  df_caudal <- df_caudal[,-(del_row)]
+  station <- as.character(df[6,3])  
+  code_bna <- as.character(df[7,3])
+  basin <- as.character(df[8,3])
+  sub_basin <- as.character(df[9,3])
   
-  df_caudal$let <- gsub("[^[:alpha:]]","",df_caudal$...1)
-  df_caudal$num <- gsub("[^0-9]","",df_caudal$...1)
-  df_caudal     <- df_caudal[,-1]
-  df_caudal     <- df_caudal[, c(13, 14,1:12)]
-  # datos por year                                             ####
-  row_year  <- which(df_caudal$let == 'AÑO')
-  vp        <- append(row_year, nrow(df_caudal))
-  df_processed <- data.frame(matrix(nrow = 0, ncol = 5))
-  colnames(df_processed) = c("year",
-                             "month",
-                             "day",
-                             "date",
-                             "caudal")
-  for (i in seq(2,5))
+  elevation <- as.numeric(df[7,16])
+  longitude <- as.character(df[8,16])
+  latitude <- as.character(df[9,16])
+  
+  utm_north <- as.numeric(df[7,25])
+  utm_east <- as.numeric(df[8,25])
+  drainage_area <- as.numeric(df[9,25])
+  
+  # sort
+  df_discharge <- df_discharge %>%
+    dplyr::select(-c(seq(3, 22, 2), 23, 24, 26)) %>%
+    mutate(let = str_remove_all(...1, "[^[:alpha:]]"),
+           num = str_remove_all(...1, "[^0-9]")) %>%
+    dplyr::select(-...1) %>%
+    dplyr::select(let, num, everything())
+  
+  # filter
+  row_year <- which(df_discharge$let == "DIA")
+  row_year <- row_year - 1
+  vp <- append(row_year, nrow(df_discharge))
+  
+  # create
+  df_processed <- tibble(
+    year = numeric(),
+    month = numeric(),
+    day = numeric(),
+    date = Date(),
+    discharge = numeric()
+  )
+  
+  for (i in seq(2,length(row_year)))
   {
-    ## extract data of one year                                            ####
-    a <- vp[i-1]                                 #auxiliary value
-    b <- vp[i]                                   #auxiliary value
+    ## extract data of one year 
+    a <- as.numeric(vp[i-1]) #auxiliary value
+    b <- as.numeric(vp[i]) #auxiliary value
     
-    year_data <- df_caudal[c(seq(a,b)),]         #data between months
-    
-    ## extract month and year data                                         ####
-    year <- year_data[[1,2]]
-    ## delete                                                              ####
-    year_data <- year_data[-c(1,2,nrow(year_data)),-c(1,2)]
-    ## date matriz                                                               ####
-    matriz_day   <- matrix(rep(seq(1,31), 12), ncol = 12)
+    year_data <- df_discharge[c(seq(a,b)),] #data between months
+    year <- year_data[[1,2]] # extract month and year data 
+
+    year_data <- year_data[-c(1,2,nrow(year_data)),-c(1,2)] # delete 
+    matriz_day   <- matrix(rep(seq(1,31), 12), ncol = 12) # date matriz
     df_day_aux   <- data.frame(matriz_day)
     
     matriz_month <- matrix(seq(1:12), ncol = 12)
@@ -96,11 +109,12 @@ sort_data <- function(df)
     df_year_aux <- data.frame(matriz_year)
     
     year_data <- cbind.data.frame(year_data,df_day_aux,df_month_aux,df_year_aux)
-    ## sequence of sort                                                    ####
-    sort      <- sequence_sort()
+
+    sort      <- sequence_sort() # sequence of sort 
     year_data <- year_data[,sort]
-    ## noname                                                              ####
-    colnames(year_data) <-rep(c("day","month","year","caudal"),12)
+    
+    # noname   
+    colnames(year_data) <-rep(c("day","month","year","discharge"),12)
     
     year_data<-rbind(year_data[1:4],
                      setNames(year_data[5:8], names(year_data)[1:4]),
@@ -114,33 +128,39 @@ sort_data <- function(df)
                      setNames(year_data[37:40], names(year_data)[1:4]),
                      setNames(year_data[41:44], names(year_data)[1:4]),
                      setNames(year_data[45:48], names(year_data)[1:4])) 
-    ## noname                                                              ####
     
+    # noname 
     year_data$date <- as.Date(with(year_data,paste(year,month,day,sep="/")),"%Y/%m/%d")
     year_data      <- year_data[!is.na(year_data$date),]
     
     year_data$year    <- as.numeric(year_data$year)
-    year_data$caudal <- round(as.numeric(year_data$caudal),2)
+    year_data$discharge <- round(as.numeric(year_data$discharge),2)
     year_data <- year_data[,c(3,2,1,5,4)]   
-    ## merge years of data ####
+    # merge years of data 
     df_processed <- merge(df_processed,year_data,all = TRUE)
   } 
   
-  df_processed <- df_processed[, c("date", "caudal")]
-  # Renombrar la columna con el nombre del DataFrame
-  
-  colnames(df_processed)[2] <- df_name
-  df_processed$date <- as.Date(df_processed$date, "%Y-%m-%d")
+  df_processed <- df_processed %>%
+    mutate (date = as.Date(date, "%Y-%m-%d")) %>%
+    mutate (station = station) %>%
+    mutate (code_bna =  code_bna) %>%
+    mutate (basin = basin) %>%
+    mutate (sub_basin = sub_basin) %>%
+    mutate (elevation = elevation) %>%
+    mutate (latitude = latitude) %>%
+    mutate (longitude = longitude) %>%
+    mutate (drainage_area = drainage_area) %>%
+    mutate (utm_north = utm_north) %>%
+    mutate (utm_east = utm_east) %>%
+    dplyr::select("date", "station", "code_bna", "basin", "sub_basin", "elevation", "latitude", "longitude", "drainage_area", "utm_north", "utm_east", "discharge") 
   
   return(df_processed)
 }
 
 # tidy data
-q_daily <- map(datos_por_archivo, ~ map(., sort_data)) %>%
-  #map(~ map(., na.omit)) %>%
-  map(., ~ reduce(.x, merge, by = "date", all = TRUE)) %>%
+q_daily <- map(data_per_xls_file, ~ map(., sort_data)) %>%
+  unlist(.,recursive = FALSE) %>%
   bind_rows(.) %>%
-  group_by(date) %>%
-  summarise_all (~ if(is.numeric(.)) first(.[!is.na(.)]) else first(.[!is.na(.)])) %>%
+  distinct(.) %>%
   arrange(date) %>%
   remove_rownames()
